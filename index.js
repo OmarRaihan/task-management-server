@@ -30,28 +30,38 @@ async function run() {
     });
 
     // PUT API || Task / Update Task
-    app.put("/task/:id", async (req, res) => {
-      const id = req.params.id;
-      const updateTask = req.body;
-      const filter = { _id: ObjectId(id) };
-      const options = { upsert: true };
-      const updatedDoc = {
-        $set: {
-          name: updateTask.name,
-          description: updateTask.description,
-        },
-      };
-      const result = await tasksCollection.updateOne(filter, updatedDoc, options);
+    // app.put("/task/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const updateTask = req.body;
+    //   const filter = { _id: ObjectId(id) };
+    //   const options = { upsert: true };
+    //   const updatedDoc = {
+    //     $set: {
+    //       name: updateTask.name,
+    //       description: updateTask.description,
+    //     },
+    //   };
+    //   const result = await tasksCollection.updateOne(filter, updatedDoc, options);
+    //   res.send(result);
+    // });
+
+    // Get API || Tasks
+    app.get("/task/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const tasks = await tasksCollection.find(query).toArray();
+      // const tasks = await cursor.toArray();
+      res.send(tasks);
+    });
+
+    // Delete API || Task
+    app.delete("/task/:id", async (req, res) => {
+      const id = req.params.id.trim();
+      const query = { _id: ObjectId(id) };
+      const result = await tasksCollection.deleteOne(query);
       res.send(result);
     });
 
-    // Get API || Tasks
-    app.get("/task", async (req, res) => {
-      const query = {};
-      const cursor = tasksCollection.find(query);
-      const tasks = await cursor.toArray();
-      res.send(tasks);
-    });
   } finally {
   }
 }
